@@ -74,4 +74,16 @@
     }];
 }
 
+- (IBAction)listChannels:(id)sender {
+    [self.application.pushNotifications getSubscriptions:^(KZResponse *r) {
+        
+        NSString *message = [NSString stringWithFormat:@"%@", r.response];
+        [[[UIAlertView alloc] initWithTitle:@"Subscribed channels"
+                                    message:message
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles: nil] show];
+    }];
+}
+
 @end

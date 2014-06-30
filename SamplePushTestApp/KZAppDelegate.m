@@ -10,12 +10,12 @@
 #import <KZApplication.h>
 #import "MainViewController.h"
 
-NSString * const kzAppCenterUrl = @"";
-NSString * const kzAppName = @"";
-NSString * const kzUser = @"";
-NSString * const kzPassword = @"";
-NSString * const kzProvider = @"";
-NSString * const kzApplicationKey = @"";
+NSString * const kzAppCenterUrl = @"https://tests.qa.kidozen.com";
+NSString * const kzAppName = @"tasks";
+NSString * const kzUser = @"tests@kidozen.com";
+NSString * const kzPassword = @"pass";
+NSString * const kzProvider = @"Kidozen";
+NSString * const kzApplicationKey = @"GZJQetc+VH9JLWoHnLEwlk7tw+XPSniMUSuIzK9kDxE=";
 
 @interface KZAppDelegate()
 

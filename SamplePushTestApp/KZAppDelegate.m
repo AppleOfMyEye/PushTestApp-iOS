@@ -63,23 +63,33 @@ NSString * const kzApplicationKey = @"GZJQetc+VH9JLWoHnLEwlk7tw+XPSniMUSuIzK9kDx
                                                                strictSSL:NO
                                                              andCallback:^(KZResponse *r) {
                                                                  
-                                                                 [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-                                                                  (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-                                                                 
+                                                                 [safeMe.application authenticateUser:kzUser
+                                                                                         withProvider:kzProvider
+                                                                                          andPassword:kzPassword
+                                                                                           completion:^(id c) {
 
-                                                                 if (r.error == nil) {
-                                                                     safeMe.mainViewController.application = safeMe.application;
                                                                      
-                                                                     [safeMe.window setRootViewController:safeMe.navigationController];
-                                                                 } else {
-                                                                     NSString *message = [NSString stringWithFormat:@"%@", r.error];
+                                                                     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+                                                                      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
                                                                      
-                                                                     [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                                                                 message:message
-                                                                                                delegate:self
-                                                                                       cancelButtonTitle:@"OK"
-                                                                                       otherButtonTitles: nil] show];
-                                                                 }
+                                                                     
+                                                                     if (r.error == nil) {
+                                                                         safeMe.mainViewController.application = safeMe.application;
+                                                                         
+                                                                         [safeMe.window setRootViewController:safeMe.navigationController];
+                                                                     } else {
+                                                                         NSString *message = [NSString stringWithFormat:@"%@", r.error];
+                                                                         
+                                                                         [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                                                                     message:message
+                                                                                                    delegate:self
+                                                                                           cancelButtonTitle:@"OK"
+                                                                                           otherButtonTitles: nil] show];
+                                                                     }
+                                                                     
+                                                                 }];
+
+                                                                 
                                                                  
                                                              }];
 }

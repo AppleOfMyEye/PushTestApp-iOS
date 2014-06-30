@@ -61,7 +61,9 @@
 }
 
 - (IBAction)push:(id)sender {
-    [self.application.pushNotifications pushNotification:@{@"message": self.messageTextField.text}
+    [self.application.pushNotifications pushNotification:@{@"text": self.messageTextField.text,
+                                                           @"title" : @"iOS Title",
+                                                           @"type" : @"raw"}
                                                InChannel:self.pushTextField.text
                                               completion:^(KZResponse *r) {
                                                   if (r.error == nil) {

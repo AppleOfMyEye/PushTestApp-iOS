@@ -68,10 +68,8 @@ NSString * const kzApplicationKey = @"";
                                                                                           andPassword:kzPassword
                                                                                            completion:^(id c) {
 
-                                                                     
                                                                      [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
                                                                       (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-                                                                     
                                                                      
                                                                      if (r.error == nil) {
                                                                          safeMe.mainViewController.application = safeMe.application;
@@ -86,17 +84,12 @@ NSString * const kzApplicationKey = @"";
                                                                                            cancelButtonTitle:@"OK"
                                                                                            otherButtonTitles: nil] show];
                                                                      }
-                                                                     
                                                                  }];
-
-                                                                 
-                                                                 
                                                              }];
 }
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    NSLog(@"Received Remote notification %@", userInfo);
     NSString *message = userInfo[@"message"];
     NSString *title = userInfo[@"aps"][@"alert"];
     [[[UIAlertView alloc] initWithTitle:title

@@ -57,7 +57,7 @@ NSString * const kzApplicationKey = @"";
 {
     __weak KZAppDelegate *safeMe = self;
     
-    self.application = [[KZApplication alloc] initWithTennantMarketPlace:kzAppCenterUrl
+    self.application = [[KZApplication alloc] initWithTenantMarketPlace:kzAppCenterUrl
                                                          applicationName:kzAppName
                                                           applicationKey:kzApplicationKey
                                                                strictSSL:NO

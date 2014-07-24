@@ -6,27 +6,24 @@
 //  Copyright 2013 KidoZen All rights reserved.
 //
 
-#import "KZBaseService.h"
-#import "KZNotification.h"
-#import "KZQueue.h"
-#import "KZStorage.h"
-#import "KZConfiguration.h"
-#import "KZMail.h"
-#import "KZSMSSender.h"
 #import "KZLogging.h"
-#import "KZService.h"
-#import "KZDatasource.h"
-#import "KZCrashReporter.h"
-
-#if TARGET_OS_IPHONE
-#import "KZPubSubChannel.h"
-#endif
-
-#import "KZWRAPv09IdentityProvider.h"
-#import <SVHTTPRequest.h>
+#import "KZObject.h"
 
 @class KZApplicationConfiguration;
+@class KZCrashReporter;
+@class KZResponse;
+@class KZQueue;
+@class KZStorage;
+@class KZService;
+@class KZConfiguration;
+@class KZSMSSender;
+@class KZNotification;
+@class KZMail;
+@class KZDatasource;
 
+#if TARGET_OS_IPHONE
+@class KZPubSubChannel;
+#endif
 
 typedef void (^AuthCompletionBlock)(id);
 typedef void (^TokenExpiresBlock)(id);
@@ -37,22 +34,11 @@ typedef void (^InitializationCompleteBlock)(KZResponse *);
  * Main KidoZen application object
  *
  */
-@interface KZApplication : KZBaseService
-
+@interface KZApplication : KZObject
 
 @property (nonatomic, readonly) KZCrashReporter *crashreporter;
-
-@property (atomic) BOOL strictSSL ;
-
-@property (nonatomic, copy) AuthCompletionBlock authCompletionBlock;
-@property (nonatomic, copy) TokenExpiresBlock tokenExpiresBlock;
-@property (copy, nonatomic) InitializationCompleteBlock onInitializationComplete;
-
+@property (nonatomic, copy) InitializationCompleteBlock onInitializationComplete;
 @property (nonatomic, readonly) KZApplicationConfiguration *applicationConfig;
-
-@property (readonly, nonatomic) SVHTTPClient * defaultClient;
-
-@property (nonatomic, copy) NSString * lastProviderKey;
 
 /**
  * Constructor
@@ -87,19 +73,53 @@ typedef void (^InitializationCompleteBlock)(KZResponse *);
 
 @end
 
+
+#pragma mark - Authentication Related methods
+
 @interface KZApplication(Authentication)
 
--(void) authenticateUser:(NSString *) user withProvider:(NSString *) provider andPassword:(NSString *) password;
--(void) authenticateUser:(NSString *) user withProvider:(NSString *) provider andPassword:(NSString *) password completion:(void (^)(id))block;
+@property (nonatomic, readonly) KZUser *kzUser;
+@property (nonatomic, readonly) BOOL isAuthenticated;
+@property (nonatomic, readonly) BOOL passiveAuthenticated;
+
+/*
+ * This method will authenticate you to Kidozen. 
+ * To check whether the authentication was successful or not, you should check 
+ * on the callback type, if it's an NSError, the authentication was not OK.
+ * 
+ * @param callback can be a KZResponse or an  NSError, whether the authentication
+ * was successful or not.
+ * 
+ */
+-(void) authenticateUser:(NSString *)user
+            withProvider:(NSString *)provider
+             andPassword:(NSString *)password
+              completion:(void (^)(id))callback;
+
+-(void) authenticateUser:(NSString *)user
+            withProvider:(NSString *)provider
+             andPassword:(NSString *)password;
+
+
+- (void)handleAuthenticationViaApplicationKeyWithCallback:(void(^)(NSError *))callback;
 
 /**
  * Starts a passive authentication flow.
+ * @param callback can be a KZResponse or an  NSError, whether the authentication
+ * was successful or not.
  */
-- (void)doPassiveAuthenticationWithCompletion:(void (^)(id))block;
+- (void)doPassiveAuthenticationWithCompletion:(void (^)(id))callback;
 
-//custom provider
--(void) registerProviderWithClassName:(NSString *) className andProviderKey:(NSString *) providerKey;
--(void) registerProviderWithInstance:(id) instance andProviderKey:(NSString *) providerKey;
+/* If you want to change the authentication callback, you can do so by
+ * setting this property.
+ */
+- (void) setAuthCompletionBlock:(AuthCompletionBlock)authCompletionBlock;
+
+/*
+ * This is the callback that will get called when your token expires.
+ */
+- (void)setTokenExpiresBlock:(TokenExpiresBlock)tokenExpiresBlock;
+
 
 @end
 
@@ -123,7 +143,7 @@ typedef void (^InitializationCompleteBlock)(KZResponse *);
 - (KZStorage *)StorageWithName:(NSString *)name;
 
 /**
- * Creates a new LOBService object
+ * Creates a new LOBService (LineOfBusiness Service) object
  *
  * @param name the service name.
  * @return a new LOBService object

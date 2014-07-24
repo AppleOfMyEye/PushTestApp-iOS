@@ -10,10 +10,22 @@
 #import "KZObject.h"
 
 @class KZAuthenticationConfig;
+@class KZResponse;
 
+/*
+ * This class holds all information related to the application config.
+ * The initial GET request will fill an instance of this class.
+ */
 @interface KZApplicationConfiguration : KZObject
 
-- (id)initWithDictionary:(NSDictionary *)configDictionary error:(NSError **)error;
+- (void)setupWithApplicationName:(NSString *)applicationName
+                         tennant:(NSString *)tenantMarketPlace
+                       strictSSL:(BOOL)strictSSL
+                      completion:(void(^)(id configResponse,
+                                          NSHTTPURLResponse *configUrlResponse,
+                                          NSError *error))cb;
+
+- (BOOL)validConfigForProvider:(NSString *)provider error:(NSError **)error;
 
 @property (nonatomic, copy, readonly) NSString *displayName;
 @property (nonatomic, copy, readonly) NSString *customUrl;

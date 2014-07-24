@@ -58,34 +58,48 @@ NSString * const kzApplicationKey = @"";
     __weak KZAppDelegate *safeMe = self;
     
     self.application = [[KZApplication alloc] initWithTenantMarketPlace:kzAppCenterUrl
-                                                         applicationName:kzAppName
-                                                          applicationKey:kzApplicationKey
-                                                               strictSSL:NO
-                                                             andCallback:^(KZResponse *r) {
-                                                                 
-                                                                 [safeMe.application authenticateUser:kzUser
-                                                                                         withProvider:kzProvider
-                                                                                          andPassword:kzPassword
-                                                                                           completion:^(id c) {
-
-                                                                     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-                                                                      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-                                                                     
-                                                                     if (r.error == nil) {
-                                                                         safeMe.mainViewController.application = safeMe.application;
-                                                                         
-                                                                         [safeMe.window setRootViewController:safeMe.navigationController];
-                                                                     } else {
-                                                                         NSString *message = [NSString stringWithFormat:@"%@", r.error];
-                                                                         
-                                                                         [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                                                                     message:message
-                                                                                                    delegate:self
-                                                                                           cancelButtonTitle:@"OK"
-                                                                                           otherButtonTitles: nil] show];
-                                                                     }
-                                                                 }];
-                                                             }];
+                                                        applicationName:kzAppName
+                                                         applicationKey:kzApplicationKey
+                                                              strictSSL:NO
+                                                            andCallback:^(KZResponse *r)
+                        {
+                            if (r.error == nil)
+                            {
+                                
+                                [safeMe.application authenticateUser:kzUser
+                                                        withProvider:kzProvider
+                                                         andPassword:kzPassword
+                                                          completion:^(id c)
+                                 {
+                                     
+                                     if (![c isKindOfClass:[NSError class]])
+                                     {
+                                         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+                                          (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+                                         
+                                         safeMe.mainViewController.application = safeMe.application;
+                                         
+                                         [safeMe.window setRootViewController:safeMe.navigationController];
+                                     } else {
+                                         [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                                     message:[(NSError *)c localizedDescription]
+                                                                    delegate:self
+                                                           cancelButtonTitle:@"OK"
+                                                           otherButtonTitles: nil] show];
+                                     }
+                                 }];
+                            }
+                            else
+                            {
+                                NSString *message = [NSString stringWithFormat:@"%@", r.error];
+                                
+                                [[[UIAlertView alloc] initWithTitle:@"Error"
+                                                            message:message
+                                                           delegate:self
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles: nil] show];
+                            }
+                        }];
 }
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -97,11 +111,12 @@ NSString * const kzApplicationKey = @"";
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles: nil] show];
-
+    
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    // try again
     [self initialize];
 }
 
@@ -113,7 +128,7 @@ NSString * const kzApplicationKey = @"";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 
